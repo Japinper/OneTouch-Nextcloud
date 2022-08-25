@@ -12,10 +12,9 @@ read -p "¿Deseas empezar con la instalación (Y-N)?--> " valor1
 if [[ $valor1 == "Y" ]] || [[ $valor1 == "y" ]]
 then
 ###Preguntas para creacion de DB (users and pssw)
-	read -p "Introduce una contraseña de acceso para MySQL--> " mysqluser
 	read -p "Introduce el nombre para la Base de Datos--> " dbname
 	read -p "Introduce el nombre de usuario para la Base de Datos--> " dbuser
-	read -p "Introduce una contraseña para el usuario $dbuser--> " userpass
+	read -p "Introduce una contraseña para el usuario $dbuser--> " pass
 	sleep 1
 	clear
 ###Ejecución de la instalación
@@ -33,7 +32,7 @@ then
 ###Instalar DB
 	echo "Instalando y configurando la base de datos..."
 	apt-get install -y mariadb-server mariadb-client &> /dev/null
-	mysql -e "UPDATE mysql.user SET Password = PASSWORD('$mysqluser') WHERE User = 'root'; FLUSH PRIVILEGES; CREATE DATABASE $dbname; USE $dbname; CREATE USER $dbuser IDENTIFIED BY '$userpass'; GRANT USAGE ON *.* TO $dbuser@localhost IDENTIFIED BY '$userpass'; GRANT ALL privileges ON $dbname.* TO $dbuser@localhost; FLUSH PRIVILEGES;" &> /dev/null
+	mysql -u root -p "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$pass'; CREATE DATABASE $dbname; GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost'; FLUSH PRIVILEGES; QUIT" &> /dev/null
 	echo "Configuracion finalizada..."
 	echo ""
 	echo "Instalando Apache y PHP..."
