@@ -14,12 +14,14 @@ then
 ###Preguntas para creacion de DB (users and pssw)
 	read -p "Introduce una contraseña de acceso para MySQL--> " mysqluser
 	read -p "Introduce el nombre para la Base de Datos--> " dbname
-	read -p "Introduce el nombre de usuario para la Base de Datos-->" dbuser
-	read -p "Introduce una contraseña para el usuario $dbuser-->" userpass
+	read -p "Introduce el nombre de usuario para la Base de Datos--> " dbuser
+	read -p "Introduce una contraseña para el usuario $dbuser--> " userpass
 	sleep 1
 	clear
 ###Ejecución de la instalación
 	echo "[*] Preparando la instalación..."
+	apt-get install -y sudo &> /dev/null
+	apt-get install -y unzip &> /dev/null
 	sleep 1
 	echo ""
 	echo "Actualizando el sistema..."
@@ -30,27 +32,27 @@ then
 	echo ""
 ###Instalar DB
 	echo "Instalando y configurando la base de datos..."
-	apt-get install -y mariadb-server mariadb-client
+	apt-get install -y mariadb-server mariadb-client &> /dev/null
 	mysql -e "UPDATE mysql.user SET Password = PASSWORD('$mysqluser') WHERE User = 'root'; FLUSH PRIVILEGES; CREATE DATABASE $dbname; USE $dbname; CREATE USER $dbuser IDENTIFIED BY '$userpass'; GRANT USAGE ON *.* TO $dbuser@localhost IDENTIFIED BY '$userpass'; GRANT ALL privileges ON $dbname.* TO $dbuser@localhost; FLUSH PRIVILEGES;" &> /dev/null
 	echo "Configuracion finalizada..."
 	echo ""
 	echo "Instalando Apache y PHP..."
-	apt-get install -y php7.4 php-{cli,xml,zip,curl,gd,cgi,mysql,mbstring}
-        apt-get install -y apache2 libapache2-mod-php
+	apt-get install -y php7.4 php-{cli,xml,zip,curl,gd,cgi,mysql,mbstring} &> /dev/null
+        apt-get install -y apache2 libapache2-mod-php &> /dev/null
 	sudo systemctl restart apache2
 	echo "Instalacion Finalizada"
 	echo""
 	echo "Instalando Nextcloud..."
-	sudo apt -y install wget curl unzip
-	wget https://download.nextcloud.com/server/releases/latest.zip
-	unzip latest.zip
+	apt-get install -y wget curl &> /dev/null
+	wget https://download.nextcloud.com/server/releases/latest.zip &> /dev/null
+	unzip latest.zip &> /dev/null
 	rm -f latest.zip
 	sudo mv nextcloud /var/www/html/
 	sudo chown -R www-data:www-data /var/www/html/nextcloud
 	sudo sudo chmod -R 755 /var/www/html/nextcloud
 	sudo a2dissite 000-default.conf
 	sudo rm /var/www/html/index.html
-	sudo systemctl restart apache2
+	sudo systemctl restart apache2 &> /dev/null
 	echo "Nextcloud a sido Instalado Correctamente"
 exit
 
